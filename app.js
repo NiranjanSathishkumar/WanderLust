@@ -57,7 +57,7 @@ store.on("error", () => {
 
 const sessionOptions = {
     store,
-    secret: provess.env.SECRET,
+    secret: process.env.SECRET,
     resave: false,
     saveUninitialized: true,
     cookie: {
