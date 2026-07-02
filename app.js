@@ -85,16 +85,6 @@ app.use((req, res, next) => {
     next();
 });
 
-// app.get("/test", (req, res) => {
-//     req.session.username = "Niranjan";
-//     res.send("Session created");
-// });
-
-
-// app.get("/", (req, res) => {
-//     res.send("Hi, I am root");
-// })
-
 
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
