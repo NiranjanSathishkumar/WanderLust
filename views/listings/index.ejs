@@ -1,0 +1,138 @@
+<% layout("/layouts/boilerplate") %>
+
+<div id="filters-wrapper">
+  <button id="scroll-left" class="scroll-btn" aria-label="Scroll left"><i class="fa-solid fa-chevron-left"></i></button>
+
+  <div id="filters">
+    <div class="filter active" data-category="trending">
+      <i class="fa-solid fa-fire"></i>
+      <p>Trending</p>
+    </div>
+    <div class="filter" data-category="room">
+      <i class="fa-solid fa-bed"></i>
+      <p>Rooms</p>
+    </div>
+    <div class="filter" data-category="beachfront">
+      <i class="fa-solid fa-water"></i>
+      <p>Beachfront</p>
+    </div>
+    <div class="filter" data-category="arctic">
+      <i class="fa-solid fa-snowflake"></i>
+      <p>Arctic</p>
+    </div>
+    <div class="filter" data-category="countryside">
+      <i class="fa-solid fa-mountain"></i>
+      <p>Countryside</p>
+    </div>
+    <div class="filter" data-category="cabins">
+      <i class="fa-solid fa-tree"></i>
+      <p>Cabins</p>
+    </div>
+    <div class="filter" data-category="pools">
+      <i class="fa-solid fa-person-swimming"></i>
+      <p>Amazing Pools</p>
+    </div>
+    <div class="filter" data-category="views">
+      <i class="fa-solid fa-city"></i>
+      <p>Amazing Views</p>
+    </div>
+    <div class="filter" data-category="camping">
+      <i class="fa-solid fa-campground"></i>
+      <p>Camping</p>
+    </div>
+    <div class="filter" data-category="farms">
+      <i class="fa-solid fa-house-chimney"></i>
+      <p>Farms</p>
+    </div>
+    <div class="filter" data-category="islands">
+      <i class="fa-solid fa-umbrella-beach"></i>
+      <p>Islands</p>
+    </div>
+    <div class="filter" data-category="luxe">
+      <i class="fa-solid fa-champagne-glasses"></i>
+      <p>Luxe</p>
+    </div>
+    <div class="filter" data-category="iconic">
+      <i class="fa-solid fa-igloo"></i>
+      <p>Iconic Cities</p>
+    </div>
+    <div class="filter" data-category="tiny">
+      <i class="fa-solid fa-caravan"></i>
+      <p>Tiny Homes</p>
+    </div>
+    <div class="filter" data-category="towers">
+      <i class="fa-solid fa-tower-observation"></i>
+      <p>Towers</p>
+    </div>
+    <div class="filter" data-category="trekking">
+      <i class="fa-solid fa-person-hiking"></i>
+      <p>Trekking</p>
+    </div>
+    <div class="filter" data-category="wellness">
+      <i class="fa-solid fa-spa"></i>
+      <p>Wellness</p>
+    </div>
+    <div class="filter" data-category="temples">
+      <i class="fa-solid fa-vihara"></i>
+      <p>Temples</p>
+    </div>
+    <div class="filter" data-category="farmstay">
+      <i class="fa-solid fa-tractor"></i>
+      <p>Farm Stay</p>
+    </div>
+  </div>
+
+  <button id="scroll-right" class="scroll-btn" aria-label="Scroll right"><i class="fa-solid fa-chevron-right"></i></button>
+
+  <label class="form-check form-switch tax-switch" id="taxSwitchPill" for="switchCheckDefault">
+    <i class="fa-solid fa-receipt tax-switch-icon"></i>
+    <input class="form-check-input" type="checkbox" role="switch" id="switchCheckDefault">
+    <span>Show total after taxes</span>
+  </label>
+</div>
+
+<div class="row row-cols-xl-4 row-cols-lg-3 row-cols-md-2 row-cols-sm-1 mt-3 g-4">
+  <% for(let listing of allListings) { %>
+    <a href="/listings/<%= listing._id %>" class="listing-link col">
+      <div class="listing-card">
+        <div class="card-img-wrapper">
+          <img
+            src="<%= listing.image.url %>"
+            class="card-img-top"
+            alt="<%= listing.title %>"
+            loading="lazy"
+          />
+        </div>
+        <div class="card-body">
+          <p class="listing-title"><%= listing.title %></p>
+          <p class="listing-price">
+            <strong>&#8377;<%= listing.price.toLocaleString("en-IN") %></strong> / night
+            <i class="tax-info">&nbsp;+18% GST</i>
+          </p>
+        </div>
+      </div>
+    </a>
+  <% } %>
+</div>
+
+<script>
+  // Tax switch — toggle GST info & pill active state
+  const taxSwitch = document.getElementById("switchCheckDefault");
+  const taxPill   = document.getElementById("taxSwitchPill");
+  taxSwitch.addEventListener("change", () => {
+    const taxInfoEls = document.getElementsByClassName("tax-info");
+    const active = taxSwitch.checked;
+    for (const el of taxInfoEls) {
+      el.style.display = active ? "inline" : "none";
+    }
+    taxPill.classList.toggle("is-active", active);
+  });
+
+  // Filter tabs — highlight active
+  document.querySelectorAll(".filter").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".filter").forEach(f => f.classList.remove("active"));
+      btn.classList.add("active");
+    });
+  });
+</script>

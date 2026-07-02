@@ -1,0 +1,35 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="error-page-wrapper">
+  <div class="error-card">
+    <div class="error-code">
+      <%= err.statusCode || 500 %>
+    </div>
+    <div class="error-icon-container">
+      <i class="fa-solid fa-circle-exclamation"></i>
+    </div>
+    <h1 class="error-title">Something went wrong</h1>
+    <p class="error-message">
+      <%= err.message || "An unexpected error has occurred on our server. Please try again later." %>
+    </p>
+
+    <div class="error-actions">
+      <a href="/listings" class="btn btn-primary">
+        <i class="fa-solid fa-house me-2"></i>Go to Home
+      </a>
+      <button class="btn btn-secondary" onclick="history.back()">
+        <i class="fa-solid fa-arrow-left me-2"></i>Go Back
+      </button>
+    </div>
+
+    <% if (typeof process !== "undefined" && process.env && process.env.NODE_ENV !== "production" && err.stack) { %>
+      <div class="error-details-wrapper">
+        <details>
+          <summary class="error-details-summary">Show technical details (development only)</summary>
+          <pre class="error-stack"><code><%= err.stack %></code></pre>
+        </details>
+      </div>
+    <% } %>
+  </div>
+</div>
+

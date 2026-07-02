@@ -1,0 +1,92 @@
+<% layout("/layouts/boilerplate.ejs") -%>
+
+<div class="form-page-wrapper">
+  <h1 class="form-page-title">
+    <i class="fa-solid fa-compass me-2" style="color: var(--color-coral);"></i>
+    List Your Place
+  </h1>
+
+  <form method="POST" action="/listings" novalidate class="needs-validation" enctype="multipart/form-data">
+
+    <div class="form-group">
+      <label for="title" class="form-label">Title</label>
+      <input
+        type="text"
+        required
+        name="listing[title]"
+        id="title"
+        class="form-control"
+        placeholder="e.g. Cozy beachside cottage in Goa"
+      />
+      <div class="invalid-feedback">Please provide a title for your listing.</div>
+    </div>
+
+    <div class="form-group">
+      <label for="description" class="form-label">Description</label>
+      <textarea
+        required
+        name="listing[description]"
+        id="description"
+        class="form-control"
+        rows="5"
+        placeholder="Describe your space — what makes it special?"
+      ></textarea>
+      <div class="invalid-feedback">Please add a description.</div>
+    </div>
+
+    <div class="form-group">
+      <label for="image" class="form-label">Upload Image</label>
+      <input type="file" name="listing[image]" id="image" class="form-control" />
+    </div>
+
+    <div class="form-group">
+      <label for="price" class="form-label">Price per Night (&#8377;)</label>
+      <input
+        required
+        type="number"
+        name="listing[price]"
+        id="price"
+        class="form-control"
+        placeholder="e.g. 2500"
+        min="0"
+      />
+      <div class="invalid-feedback">Please enter a valid price.</div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-5 form-group">
+        <label for="location" class="form-label">City / Area</label>
+        <input
+          required
+          type="text"
+          name="listing[location]"
+          id="location"
+          class="form-control"
+          placeholder="e.g. Udaipur"
+        />
+        <div class="invalid-feedback">Please enter a location.</div>
+      </div>
+
+      <div class="col-md-7 form-group">
+        <label for="country" class="form-label">Country</label>
+        <input
+          required
+          type="text"
+          name="listing[country]"
+          id="country"
+          class="form-control"
+          placeholder="e.g. India"
+        />
+        <div class="invalid-feedback">Please enter a country.</div>
+      </div>
+    </div>
+
+    <div class="d-flex gap-3 mt-4">
+      <button class="btn btn-primary" type="submit">
+        <i class="fa-solid fa-plus me-2"></i>Create Listing
+      </button>
+      <a href="/listings" class="btn btn-ghost">Cancel</a>
+    </div>
+
+  </form>
+</div>

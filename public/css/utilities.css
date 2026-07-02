@@ -1,0 +1,59 @@
+/* Layout constraints */
+.content-container {
+  max-width: 1280px;
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: var(--space-5);
+}
+
+@media (max-width: 768px) {
+  .content-container {
+    padding-inline: var(--space-4);
+  }
+}
+
+/* Scrollable category helper without visible scrollbars */
+.scroll-strip {
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* IE and Edge */
+}
+
+.scroll-strip::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Text ellipsis truncation helpers */
+.text-truncate-single {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.text-truncate-multi {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Custom spacing helpers */
+.mt-space-1 { margin-top: var(--space-1); }
+.mt-space-2 { margin-top: var(--space-2); }
+.mt-space-3 { margin-top: var(--space-3); }
+.mt-space-4 { margin-top: var(--space-4); }
+.mt-space-5 { margin-top: var(--space-5); }
+
+.mb-space-1 { margin-bottom: var(--space-1); }
+.mb-space-2 { margin-bottom: var(--space-2); }
+.mb-space-3 { margin-bottom: var(--space-3); }
+.mb-space-4 { margin-bottom: var(--space-4); }
+.mb-space-5 { margin-bottom: var(--space-5); }
+
+.gap-space-1 { gap: var(--space-1); }
+.gap-space-2 { gap: var(--space-2); }
+.gap-space-3 { gap: var(--space-3); }
+.gap-space-4 { gap: var(--space-4); }

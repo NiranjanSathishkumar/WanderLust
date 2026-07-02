@@ -1,0 +1,363 @@
+<% layout("/layouts/boilerplate.ejs") -%>
+
+<% 
+  let avg = 0;
+  if(listing.reviews && listing.reviews.length > 0) {
+    let total = 0;
+    for(let r of listing.reviews) {
+      total += r.rating;
+    }
+    avg = (total / listing.reviews.length).toFixed(1);
+  }
+%>
+
+<div class="show-container mt-4">
+  <!-- Title Section -->
+  <div class="show-header mb-4">
+    <h1 class="show-title"><%= listing.title %></h1>
+    <div class="show-title-meta">
+      <span class="meta-item">
+        <i class="fa-solid fa-star text-gold"></i>
+        <% if (listing.reviews && listing.reviews.length > 0) { %>
+          <strong><%= avg %></strong> · <%= listing.reviews.length %> <%= listing.reviews.length === 1 ? 'review' : 'reviews' %>
+        <% } else { %>
+          <span>No reviews yet</span>
+        <% } %>
+      </span>
+      <span class="meta-separator">·</span>
+      <span class="meta-item location-link">
+        <i class="fa-solid fa-location-dot"></i> <%= listing.location %>, <%= listing.country %>
+      </span>
+    </div>
+  </div>
+
+  <!-- Hero Image -->
+  <div class="show-image-wrapper mb-5">
+    <img
+      src="<%= listing.image.url %>"
+      class="show-hero-img"
+      alt="<%= listing.title %>"
+    />
+  </div>
+
+  <!-- Content Split Grid -->
+  <div class="row g-md-5 show-layout-grid">
+    
+    <!-- Left Column: Details & Reviews -->
+    <div class="col-lg-8 col-md-7 show-details-col">
+      
+      <!-- Host header -->
+      <div class="show-host-header pb-4 mb-4 border-bottom">
+        <div>
+          <h2 class="host-title mb-1">Entire stay hosted by <%= listing.owner.username %></h2>
+          <p class="host-subtitle mb-0">Professional Host · Verified Listing Details</p>
+        </div>
+        <div class="show-host-avatar">
+          <%= listing.owner.username.charAt(0).toUpperCase() %>
+        </div>
+      </div>
+
+      <!-- Description Section -->
+      <div class="show-description-section pb-4 mb-4 border-bottom">
+        <h3 class="show-section-title mb-3">About this space</h3>
+        <p class="show-description"><%= listing.description %></p>
+      </div>
+
+      <!-- Reviews Section -->
+      <div class="show-reviews-section">
+        <% let reviews = listing.reviews; %>
+        <div class="d-flex align-items-center justify-content-between mb-4">
+          <h3 class="show-section-title mb-0">
+            <% if (reviews.length > 0) { %>
+              <i class="fa-solid fa-star text-gold me-1"></i>
+              <%= avg %> · <%= reviews.length %> <%= reviews.length === 1 ? 'review' : 'reviews' %>
+            <% } else { %>
+              No reviews yet
+            <% } %>
+          </h3>
+        </div>
+
+        <% if(reviews.length > 0) { %>
+          <div class="row g-3 mb-5">
+            <% for(let i = 0; i < reviews.length; i++) { %>
+              <div class="col-md-6">
+                <div class="card review-card h-100">
+                  <div class="card-body">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                      <span class="user-avatar" style="width:28px;height:28px;font-size:0.7rem;">
+                        <%= reviews[i].author.username.charAt(0).toUpperCase() %>
+                      </span>
+                      <h5 class="card-title mb-0"><%= reviews[i].author.username %></h5>
+                    </div>
+                    <div class="review-stars mb-2">
+                      <% for(let j = 0; j < reviews[i].rating; j++) { %>
+                        <i class="fa-solid fa-star text-gold" style="font-size:0.85rem;"></i>
+                      <% } %>
+                      <% for(let j = reviews[i].rating; j < 5; j++) { %>
+                        <i class="fa-regular fa-star text-light-gray" style="font-size:0.85rem;"></i>
+                      <% } %>
+                    </div>
+                    <p class="card-text"><%= reviews[i].comment %></p>
+
+                    <% if(currUser && currUser._id.equals(reviews[i].author._id)) { %>
+                      <!-- Review delete trigger -->
+                      <button
+                        class="btn btn-sm btn-ghost wl-delete-review-btn"
+                        type="button"
+                        data-modal="deleteReviewModal"
+                        data-form-id="deleteReviewForm_<%= reviews[i]._id %>"
+                        style="padding:4px 0; font-size: var(--fs-tiny); text-decoration:none; color: var(--color-error) !important; font-weight: 500;"
+                      >
+                        <i class="fa-solid fa-trash me-1"></i>Delete Review
+                      </button>
+                      <!-- Hidden review delete form -->
+                      <form
+                        id="deleteReviewForm_<%= reviews[i]._id %>"
+                        method="post"
+                        action="/listings/<%= listing._id %>/reviews/<%= reviews[i]._id %>?_method=DELETE"
+                        style="display:none;"
+                      ></form>
+                    <% } %>
+                  </div>
+                </div>
+              </div>
+            <% } %>
+          </div>
+        <% } %>
+
+        <!-- Leave a Review Form -->
+        <% if(currUser) { %>
+          <div class="card show-review-form-card p-4 border rounded-3 mb-5">
+            <h3 class="show-section-title mb-3" style="font-size: 1.25rem;">Leave a Review</h3>
+            <form method="post" action="/listings/<%= listing._id %>/reviews" novalidate class="needs-validation">
+
+              <div class="form-group mb-3">
+                <label class="form-label">Rating</label>
+                <!-- Hidden input carries the actual value -->
+                <input type="hidden" name="review[rating]" id="ratingValue" value="3" required />
+                <div class="star-picker" id="starPicker" role="radiogroup" aria-label="Rating">
+                  <button type="button" class="star-btn" data-value="1" aria-label="1 star"><i class="fa-solid fa-star"></i></button>
+                  <button type="button" class="star-btn" data-value="2" aria-label="2 stars"><i class="fa-solid fa-star"></i></button>
+                  <button type="button" class="star-btn active" data-value="3" aria-label="3 stars"><i class="fa-solid fa-star"></i></button>
+                  <button type="button" class="star-btn" data-value="4" aria-label="4 stars"><i class="fa-solid fa-star"></i></button>
+                  <button type="button" class="star-btn" data-value="5" aria-label="5 stars"><i class="fa-solid fa-star"></i></button>
+                </div>
+                <p class="star-label-text" id="starLabelText">Good</p>
+              </div>
+
+              <div class="form-group mb-4">
+                <label for="comment" class="form-label">Comment</label>
+                <textarea
+                  class="form-control"
+                  rows="4"
+                  name="review[comment]"
+                  id="comment"
+                  placeholder="Share your experience staying here..."
+                  required
+                ></textarea>
+                <div class="invalid-feedback">Comment can't be empty</div>
+              </div>
+
+              <button class="btn btn-primary px-4 mt-2" type="submit">
+                <i class="fa-solid fa-paper-plane me-2"></i>Submit Review
+              </button>
+            </form>
+          </div>
+        <% } %>
+      </div>
+
+    </div>
+
+    <!-- Right Column: Sticky Sidebar Info Card -->
+    <div class="col-lg-4 col-md-5 show-sidebar-col mt-4 mt-md-0"><br>
+      <div class="show-sticky-card shadow">
+        <div class="price-section mb-4">
+          <span class="price-value">&#8377;<%= listing.price.toLocaleString("en-IN") %></span>
+          <span class="price-label ms-1">/ night</span>
+        </div>
+
+        <div class="info-card-details border rounded-3 p-3 mb-4">
+          <div class="info-card-row border-bottom pb-2 mb-2 d-flex justify-content-between">
+            <span class="info-label text-muted"><i class="fa-solid fa-location-dot me-2"></i>Location</span>
+            <span class="info-value text-end"><%= listing.location %></span>
+          </div>
+          <div class="info-card-row d-flex justify-content-between">
+            <span class="info-label text-muted"><i class="fa-solid fa-earth-asia me-2"></i>Country</span>
+            <span class="info-value text-end"><%= listing.country %></span>
+          </div>
+        </div>
+
+        <!-- Sticky Card Buttons (Owner Actions or booking context) -->
+        <div class="d-grid gap-3">
+          <% if(currUser && currUser._id.equals(listing.owner._id)) { %>
+            <a href="/listings/<%= listing._id %>/edit" class="btn btn-primary py-2.5">
+              <i class="fa-solid fa-pen-to-square me-2"></i>Edit Listing
+            </a>
+            <button
+              class="btn btn-secondary py-2.5"
+              type="button"
+              id="deleteListingBtn"
+              data-modal="deleteListingModal"
+            >
+              <i class="fa-solid fa-trash me-2"></i>Delete Listing
+            </button>
+          <% } else { %>
+            <!-- Premium button styling without adding fake functionality -->
+            <button class="btn btn-primary py-2.5" disabled style="opacity: 0.65; cursor: not-allowed;">
+              <i class="fa-solid fa-circle-info me-2"></i>Hosted stays
+            </button>
+          <% } %>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ Custom Confirm Modal: Delete Listing ═══ -->
+<% if(currUser && listing.owner && currUser._id.equals(listing.owner._id)) { %>
+<div class="wl-modal-backdrop" id="deleteListingModal" role="dialog" aria-modal="true" aria-labelledby="deleteListingModalTitle">
+  <div class="wl-modal">
+    <div class="wl-modal-icon">
+      <i class="fa-solid fa-trash"></i>
+    </div>
+    <p class="wl-modal-title" id="deleteListingModalTitle">Delete listing?</p>
+    <p class="wl-modal-body">
+      This will permanently remove <strong><%= listing.title %></strong> and all its reviews. This action cannot be undone.
+    </p>
+    <div class="wl-modal-actions">
+      <button class="btn btn-ghost wl-modal-cancel" type="button" data-modal="deleteListingModal">
+        Cancel
+      </button>
+      <form method="POST" action="/listings/<%= listing._id %>?_method=DELETE" style="margin:0;">
+        <button class="btn-danger-confirm" type="submit">
+          <i class="fa-solid fa-trash"></i> Yes, Delete
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+<% } %>
+
+<!-- ═══ Custom Confirm Modal: Delete Review ═══ -->
+<div class="wl-modal-backdrop" id="deleteReviewModal" role="dialog" aria-modal="true" aria-labelledby="deleteReviewModalTitle">
+  <div class="wl-modal">
+    <div class="wl-modal-icon">
+      <i class="fa-solid fa-star-half-stroke"></i>
+    </div>
+    <p class="wl-modal-title" id="deleteReviewModalTitle">Delete review?</p>
+    <p class="wl-modal-body">
+      Are you sure you want to remove your review? This action cannot be undone.
+    </p>
+    <div class="wl-modal-actions">
+      <button class="btn btn-ghost wl-modal-cancel" type="button" data-modal="deleteReviewModal">
+        Cancel
+      </button>
+      <button class="btn-danger-confirm" type="button" id="deleteReviewConfirmBtn">
+        <i class="fa-solid fa-trash"></i> Yes, Delete
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ─── Modal helpers ─── */
+  function openModal(id) {
+    const el = document.getElementById(id);
+    if (el) {
+      el.classList.add("visible");
+      document.body.style.overflow = "hidden";
+    }
+  }
+
+  function closeModal(id) {
+    const el = document.getElementById(id);
+    if (el) {
+      el.classList.remove("visible");
+      document.body.style.overflow = "";
+    }
+  }
+
+  // Close on backdrop click
+  document.querySelectorAll(".wl-modal-backdrop").forEach(backdrop => {
+    backdrop.addEventListener("click", e => {
+      if (e.target === backdrop) closeModal(backdrop.id);
+    });
+  });
+
+  // Close on cancel buttons
+  document.querySelectorAll(".wl-modal-cancel").forEach(btn => {
+    btn.addEventListener("click", () => closeModal(btn.dataset.modal));
+  });
+
+  // Close on Escape key
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape") {
+      document.querySelectorAll(".wl-modal-backdrop.visible").forEach(m => closeModal(m.id));
+    }
+  });
+
+  /* ─── Delete Listing ─── */
+  const deleteListingBtn = document.getElementById("deleteListingBtn");
+  if (deleteListingBtn) {
+    deleteListingBtn.addEventListener("click", () => openModal("deleteListingModal"));
+  }
+
+  /* ─── Delete Review ─── */
+  let pendingReviewFormId = null;
+
+  document.querySelectorAll(".wl-delete-review-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      pendingReviewFormId = btn.dataset.formId;
+      openModal("deleteReviewModal");
+    });
+  });
+
+  document.getElementById("deleteReviewConfirmBtn").addEventListener("click", () => {
+    if (pendingReviewFormId) {
+      document.getElementById(pendingReviewFormId).submit();
+    }
+  });
+
+  /* ─── Star Rating Picker ─── */
+  const starLabels = ["", "Terrible", "Poor", "Good", "Great", "Amazing!"];
+  const starBtns   = document.querySelectorAll(".star-btn");
+  const ratingHidden = document.getElementById("ratingValue");
+  const starLabelText = document.getElementById("starLabelText");
+
+  function setStars(value, isPreview = false) {
+    starBtns.forEach(btn => {
+      const v = parseInt(btn.dataset.value);
+      const filled = v <= value;
+      btn.classList.toggle("hovered", isPreview && filled);
+      btn.classList.toggle("active",  !isPreview && filled);
+    });
+    if (starLabelText) starLabelText.textContent = starLabels[value] || "";
+  }
+
+  starBtns.forEach(btn => {
+    // Hover preview
+    btn.addEventListener("mouseenter", () => setStars(parseInt(btn.dataset.value), true));
+    btn.addEventListener("mouseleave", () => setStars(parseInt(ratingHidden.value), false));
+
+    // Click to select
+    btn.addEventListener("click", () => {
+      const val = parseInt(btn.dataset.value);
+      ratingHidden.value = val;
+      setStars(val, false);
+    });
+
+    // Keyboard: Space / Enter also selects
+    btn.addEventListener("keydown", e => {
+      if (e.key === " " || e.key === "Enter") {
+        e.preventDefault();
+        const val = parseInt(btn.dataset.value);
+        ratingHidden.value = val;
+        setStars(val, false);
+      }
+    });
+  });
+
+  // Initialise to default value (3)
+  setStars(parseInt(ratingHidden.value), false);
+</script>
